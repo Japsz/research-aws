@@ -1,0 +1,12 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./dist",
+        "baseUrl": "./",
+        "paths": {
+          "/opt/nodejs/db": ["../layer/db"]
+        }
+    },
+    "include": ["**/*.ts"],
+    "exclude": ["node_modules", "cdk.out", "dist"]
+}

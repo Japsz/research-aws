@@ -1,0 +1,8 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./dist/db/nodejs"
+    },
+    "include": ["**/*.ts"],
+    "exclude": ["node_modules", "cdk.out", "dist"]
+}

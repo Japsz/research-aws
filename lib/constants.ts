@@ -1,0 +1,5 @@
+export const vpcEnv = '***'
+export const PGHOST = '***'
+export const PGUSER = '***'
+export const PGDATABASE = '***'
+export const PGPASSWORD = '***'
