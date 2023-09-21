@@ -2,11 +2,10 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { vpcEnv } from './constants';
+import { PGHOST, PGPASSWORD, PGUSER, vpcEnv } from './constants';
 import { Code, LayerVersion, Runtime } from 'aws-cdk-lib/aws-lambda';
 
 import * as rds from 'aws-cdk-lib/aws-rds';
-import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
 export class ResearchAwsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -24,30 +23,15 @@ export class ResearchAwsStack extends cdk.Stack {
 
     // Allow access to the RDS instance from the lambdas
     rdsSecurityGroup.addIngressRule(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Port.tcp(5432), 'Allow access from VPC');
-    const templatedSecret = new Secret(this, 'TemplatedSecret', {
-      generateSecretString: {
-        secretStringTemplate: JSON.stringify({ username: 'postgres' }),
-        generateStringKey: 'password',
-        excludeCharacters: '/@"',
-      },
-    });
-    const PGUSER = templatedSecret.secretValueFromJson('username').unsafeUnwrap();
-    const PGPASSWORD = templatedSecret.secretValueFromJson('password').unsafeUnwrap();
+
     // Create the RDS instance
-    const rdsInstance = new rds.DatabaseInstance(this, 'ResearchAwsRdsInstance', {
-        engine: rds.DatabaseInstanceEngine.postgres({
-          version: rds.PostgresEngineVersion.VER_15
-        }),
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MICRO),
-        vpc,
-        vpcSubnets: {
-          subnetType: ec2.SubnetType.PUBLIC,
-        },
-        credentials: {
-          username: PGUSER,
-          password: templatedSecret.secretValueFromJson('password')
-        },
-      });
+    const rdsInstance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(this, 'ResearchAwsRdsInstance', {
+      instanceEndpointAddress: PGHOST,
+      instanceIdentifier: 'connection-testing',
+      port: 5432,
+      securityGroups: [rdsSecurityGroup],
+      instanceResourceId: 'connection-testing',
+    });
 
     // ...
 

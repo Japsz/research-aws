@@ -12,7 +12,7 @@ let dbPool: DatabasePool | null = null
 
 const getConnectionString = (appConfig: AppConfig) => {
     const { PGUSER, PGHOST, PGDATABASE, PGPASSWORD, PGPORT } = appConfig
-    return `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}`
+    return `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}?sslmode=require`
 }
 
 const getDbPool = async (appConfig: AppConfig) => {
