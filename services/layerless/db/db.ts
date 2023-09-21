@@ -6,18 +6,18 @@ const appConfig = {
     PGPASSWORD: process.env.PGPASSWORD || 'postgres',
     PGPORT: process.env.PGPORT || '5432',
 }
-let dbPool: Promise<DatabasePool> | null = null
+let dbPool: DatabasePool | null = null
 
 const getConnectionString = () => {
     const { PGUSER, PGHOST, PGDATABASE, PGPASSWORD, PGPORT } = appConfig
-    return `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}`
+    return `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}`
 }
 
 const getDbPool = async () => {
     let isNewPool = false
     if (!dbPool) {
         isNewPool = true
-        dbPool = createPool(getConnectionString())
+        dbPool = await createPool(getConnectionString())
     }
     return {dbPool, isNewPool}
 }

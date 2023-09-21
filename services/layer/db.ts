@@ -8,18 +8,18 @@ interface AppConfig {
     PGPORT: string,
 }
 
-let dbPool: Promise<DatabasePool> | null = null
+let dbPool: DatabasePool | null = null
 
 const getConnectionString = (appConfig: AppConfig) => {
     const { PGUSER, PGHOST, PGDATABASE, PGPASSWORD, PGPORT } = appConfig
-    return `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}`
+    return `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}`
 }
 
 const getDbPool = async (appConfig: AppConfig) => {
     let isNewPool = false
     if (!dbPool) {
         isNewPool = true
-        dbPool = createPool(getConnectionString(appConfig))
+        dbPool = await createPool(getConnectionString(appConfig))
     }
     return {dbPool, isNewPool}
 }
